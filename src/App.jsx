@@ -1,32 +1,47 @@
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
 import HomePage from "./pages/HomePage";
+import Login from "./pages/Login";
 import Product from "./pages/Product";
 import Pricing from "./pages/Pricing";
 import PageNotFound from "./pages/PageNotFound";
 import AppLayout from "./pages/AppLayout";
-
-import Login from "./pages/Login";
-
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-
+import CityList from "./components/CityList";
+import CountryList from "./components/CountryList";
+import City from "./components/City";
+import Form from "./components/Form";
+import { CitiesContextProvider } from "./contexts/CitiesContex";
+import { AuthProvider } from "./contexts/FakeAuthContext";
+import ProtectAuth from "./pages/ProtectAuth";
 function App() {
   return (
-    <div>
-      <BrowserRouter>
-        <Routes>
-          <Route index element={<HomePage />} />
-          <Route path="product" element={<Product />} />
-          <Route path="pricing" element={<Pricing />} />
-          <Route path="app" element={<AppLayout />}>
-            <Route index element={<p>List of cities</p>} />
-            <Route path="cities" element={<p>List of cities</p>} />
-            <Route path="countries" element={<p>List of countries</p>} />
-            <Route path="form" element={<p>City form</p>} />
-          </Route>
-          <Route path="*" element={<PageNotFound />} />
-          <Route path="/login" element={<Login />} />
-        </Routes>
-      </BrowserRouter>
-    </div>
+    <AuthProvider>
+      <CitiesContextProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route index element={<HomePage />} />
+            <Route path="product" element={<Product />} />
+            <Route path="pricing" element={<Pricing />} />
+            <Route path="login" element={<Login />} />
+            <Route
+              path="app"
+              element={
+                <ProtectAuth>
+                  <AppLayout />
+                </ProtectAuth>
+              }
+            >
+              <Route index element={<Navigate replace to="cities" />} />
+              <Route path="*" element={<PageNotFound />} />
+              <Route path="cities" element={<CityList />} />
+              <Route path="cities/:id" element={<City />} />
+              <Route path="countries" element={<CountryList />} />
+              <Route path="form" element={<Form />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </CitiesContextProvider>
+    </AuthProvider>
   );
 }
 
